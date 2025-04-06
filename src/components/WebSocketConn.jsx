@@ -20,7 +20,7 @@ const WebSocketConn = () => {
         //establish connection
         try{
         const token=sessionStorage.getItem("localJwtKey")
-        const conn=new WebSocket(`ws://localhost:8080/chatServer?token=${token}`)
+        const conn=new WebSocket(`wss://hailvideo.onrender.com/chatServer?token=${token}`)
         
         ws.current=conn
         
