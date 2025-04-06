@@ -38,7 +38,7 @@ const submitSignupForm= async (obj)=>{
 
         const headers=new Headers();
         headers.append("Content-type","application/json")
-        const response=await fetch("http://localhost:8080/v1/auth/signup",{
+        const response=await fetch("api/v1/auth/signup",{
             
             method:'POST',
             headers:headers,
