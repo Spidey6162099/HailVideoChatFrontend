@@ -25,8 +25,10 @@ const Video = ({src,username}) => {
     
     return (
     
-        <div className='rounded-ls border-2 border-black h-60 w-100 flex'>
-            <video ref={videoRef} playsInline autoPlay className='flex-grow' >{username}</video>
+        <div className='rounded-ls border-2 border-black flex flex-col min-w-120 flex-grow'>
+            
+            <video ref={videoRef} playsInline autoPlay className=' min-h-120 min-w-full aspect-video' controls ></video>
+            <div className='font-roboto text-xl'>{username}</div>
         </div>    
     
   )

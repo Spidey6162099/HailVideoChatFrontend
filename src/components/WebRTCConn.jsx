@@ -254,8 +254,10 @@ const WebRTCConn = ({friend,ws}) => {
   return (
     <div className='flex flex-col justify-center items-center overflow-auto'>
     <div>WebRTC {friend}</div>
-    <Video src={localStream} username={username}></Video>
+    <div className='flex flex-col justify-center items-center'>
+    <Video src={localStream} username={"you"}></Video>
     <Video src={remoteStream} username={friend}></Video>
+    </div>
     <Chatbox datachannel={dataChannel.current} friend={friend}></Chatbox>
     <button onClick={makeOffer} className='bg-green-200 hover:bg-green-100'>make Call</button>
     </div>

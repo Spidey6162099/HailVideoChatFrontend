@@ -53,8 +53,8 @@ const VideoBox = ({sender,receiver,peerConnection}) => {
     }
     }
   return (
-    <div className='flex flex-col'>
-    <Video src={localStream} username={sender}></Video>
+    <div className='flex flex-col min-h-80 min-w-120 justify-center items-center gap-4' >
+    <Video src={localStream} username="you"></Video>
     <Video src={remoteStream} username={receiver}></Video>
     <button className='bg-green-200' onClick={initiateExchange} >call</button>
     </div>
