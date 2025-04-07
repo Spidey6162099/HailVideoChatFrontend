@@ -12,6 +12,7 @@ const WebRTCConn = ({friend,ws}) => {
     //isready keeps track of datachannel for use
     const [isReady,setIsReady]=useState(false)
 
+
     // console.log(username)
     const peerConnection=useRef(null)
     const dataChannel=useRef(null)
@@ -163,22 +164,22 @@ const WebRTCConn = ({friend,ws}) => {
     
             console.log("received remote stream "+username +" from "+friend)
     
-            //also set localstream if not already set i.e not the initiator
-            if(!localStream){
-                const local=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
-                setLocalStream(local)
+            //redundant no need
+        //     if(!localStream){
+        //         const local=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
+        //         setLocalStream(local)
 
-                local.getTracks().forEach(track=>{
-                    peerConnection.current.addTrack(track,local)
-                    console.log("sent remote stream from "+username +" to "+friend)
-                })
-            }
-            else{
-            localStream.getTracks().forEach(track=>{
-                peerConnection.current.addTrack(track,localStream)
-                console.log("sent stream from "+username +" to "+friend)
-            })
-        }
+        //         local.getTracks().forEach(track=>{
+        //             peerConnection.current.addTrack(track,local)
+        //             console.log("sent remote stream from "+username +" to "+friend)
+        //         })
+        //     }
+        //     else{
+        //     localStream.getTracks().forEach(track=>{
+        //         peerConnection.current.addTrack(track,localStream)
+        //         console.log("sent stream from "+username +" to "+friend)
+        //     })
+        // }
 
             // finally you must also send back to the source so it can set it's own remote
 
@@ -191,6 +192,7 @@ const WebRTCConn = ({friend,ws}) => {
 
         return ()=>{
             ws.removeEventListener("message",handleWebRTCMessages)
+            peerConnection.current.removeEventListener('track',handleIncomingTrack)
             
         }
 
@@ -252,15 +254,17 @@ const WebRTCConn = ({friend,ws}) => {
     //friend would be the selected friend
     //now we can begin work in actual webrtc 
 
+
+
     
   return (
     <div className='flex flex-col justify-center items-center overflow-auto'>
     <div>WebRTC {friend}</div>
-    <div className='flex flex-col justify-center items-center'>
-    <Video src={localStream} username={"you"}></Video>
+    <div className='flex flex-row justify-center items-center mt-5 gap-5'>
+    <Video src={localStream} username={"you"} ></Video>
     <Video src={remoteStream} username={friend}></Video>
     </div>
-    <Chatbox datachannel={dataChannel.current} friend={friend}></Chatbox>
+    <Chatbox datachannel={dataChannel.current} friend={friend} ></Chatbox>
     <button onClick={makeOffer} className='bg-green-200 hover:bg-green-100'>make Call</button>
     </div>
     

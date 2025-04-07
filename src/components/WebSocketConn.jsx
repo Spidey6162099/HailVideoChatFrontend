@@ -15,6 +15,8 @@ const WebSocketConn = () => {
 
     const setFriend=(friend)=>{
         console.log("state changed")
+
+        //set friend
         if(ws.current){
             console.log("friend sent baby!!!")
             ws.current.send(JSON.stringify({
