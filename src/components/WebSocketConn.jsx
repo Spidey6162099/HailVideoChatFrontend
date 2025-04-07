@@ -14,9 +14,22 @@ const WebSocketConn = () => {
     const navigate=useNavigate()
 
     const setFriend=(friend)=>{
+        console.log("state changed")
+        if(ws.current){
+            console.log("friend sent baby!!!")
+            ws.current.send(JSON.stringify({
+                "type":"friend",
+                "content":username,
+                "sender":username,
+                "receiver":friend
+            }))
+        }
+        
         setSelectedFriend(friend)
     }
     useEffect(()=>{
+
+        console.log("websocket effect called")
         //establish connection
         try{
         const token=sessionStorage.getItem("localJwtKey")
@@ -49,6 +62,10 @@ const WebSocketConn = () => {
             else if(data.type==="allusers"){
                 setOnlineUsers(data.list.filter(x=>x!=username))
             }
+            else if(data.type==="friend"){
+                console.log("friend received and set")
+                setSelectedFriend(data.content)
+            }
         }
 
         conn.onclose=async ()=>{
@@ -69,7 +86,8 @@ const WebSocketConn = () => {
         }
         
 
-        return ()=>conn.close()
+        return ()=>{ console.log("I am cleared") 
+                    conn.close()}
     }
     catch (e){
         //meaning something went wrong so make login again
