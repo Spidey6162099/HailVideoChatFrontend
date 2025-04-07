@@ -23,6 +23,8 @@ const WebRTCConn = ({friend,ws}) => {
 
     //called everytime if friend changed
     useEffect(()=>{
+
+        console.log("webrtc effect runs")
         // if(!friend||!ws){
         //     return <div>choose a friend to chat with</div>
         // }
@@ -143,8 +145,8 @@ const WebRTCConn = ({friend,ws}) => {
             if(data.type==="newIceCandidate"){
                 try{
                     await peerConnection.current.addIceCandidate(data.content)
-                    console.log("ice candidate")
-                    console.log(peerConnection.current.connectionState)
+                    // console.log("ice candidate")
+                    // console.log(peerConnection.current.connectionState)
                 }
                 catch(e){
                     console.error("failed to add ice candidate")
