@@ -74,7 +74,7 @@ const WebRTCConn = ({friend,ws}) => {
         peerConnection.current.addEventListener('connectionstatechange',event=>{
 
             // if(peerConnection.current.connectionState==='connected'){
-                console.log("connections open baby!")
+                console.log("connection state: "+peerConnection.current.connectionState)
             // }
         })
 

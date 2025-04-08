@@ -14,11 +14,11 @@ const WebSocketConn = () => {
     const navigate=useNavigate()
 
     const setFriend=(friend)=>{
-        console.log("state changed")
+        // console.log("state changed")
 
         //set friend
         if(ws.current){
-            console.log("friend sent baby!!!")
+            console.log("friend sent")
             ws.current.send(JSON.stringify({
                 "type":"friend",
                 "content":username,
