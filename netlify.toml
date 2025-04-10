@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/api/*"
-  to = "https://hailvideo.onrender.com/:splat"
+  to = "https://server.347658.xyz/:splat"
   status = 200
 
 [[redirects]]
