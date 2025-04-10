@@ -35,7 +35,7 @@ const WebSocketConn = () => {
         //establish connection
         try{
         const token=sessionStorage.getItem("localJwtKey")
-        const conn=new WebSocket(`wss://hailvideo.onrender.com/chatServer?token=${token}`)
+        const conn=new WebSocket(`wss://server.347658.xyz/chatServer?token=${token}`)
         
         ws.current=conn
         
