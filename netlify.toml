@@ -2,6 +2,7 @@
   from = "/api/*"
   to = "https://server.347658.xyz/:splat"
   status = 200
+  force=true
 
 [[redirects]]
   from ="/*"
