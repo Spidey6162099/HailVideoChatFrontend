@@ -5,7 +5,7 @@ const submitLoginForm=async (obj)=>{
        
         headers.append("Authorization","Basic "+btoa(obj.username+':'+obj.password))
         headers.append("Content-type","application/json")
-        const response=await fetch("/api/v1/auth/login",{
+        const response=await fetch("https://server.347658.xyz/v1/auth/login",{
             
             method:'POST',
             headers:headers,
