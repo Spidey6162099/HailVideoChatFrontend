@@ -49,8 +49,8 @@ const WebRTCConn = ({friend,ws}) => {
                 iceServers: [
                     {
                         urls: 'turns:347658.xyz:443',
-                        username: 'user',
-                        credential: 'user123'
+                        username: 'test',
+                        credential: 'test123'
                     }
                 ]
             }
