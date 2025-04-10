@@ -45,8 +45,16 @@ const WebRTCConn = ({friend,ws}) => {
 
             //if this is the initiator then the makeoffer would set this up so no need to do this
 
-        const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
-        peerConnection.current=new RTCPeerConnection(configuration)
+            const iceConfiguration = {
+                iceServers: [
+                    {
+                        urls: 'turns:347658.xyz:443',
+                        username: 'user',
+                        credential: 'user123'
+                    }
+                ]
+            }
+        peerConnection.current=new RTCPeerConnection(iceConfiguration)
 
         
         // dataChannel.current=peerConnection.current.createDataChannel("chat")
