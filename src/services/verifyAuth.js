@@ -1,6 +1,6 @@
 const checkAuth=async()=>{
     const user=sessionStorage.getItem("localJwtKey")
-    const response=await fetch("/api/v1/auth/verifyAuth",{
+    const response=await fetch("https://server.347658.xyz/v1/auth/verifyAuth",{
         method:'GET',
         headers:{"Authorization":`Bearer ${user}`}
       })
