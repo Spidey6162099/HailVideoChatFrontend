@@ -48,9 +48,9 @@ const WebRTCConn = ({friend,ws}) => {
             const iceConfiguration = {
                 iceServers: [
                     {
-                        urls: 'turns:347658.xyz:443',
-                        username: 'test',
-                        credential: 'test123'
+                        urls: 'turns:myturn.347658.xyz:5349',
+                        username: 'admin',
+                        credential: 'adsf@34faa86ADF905_'
                     }
                 ]
             }
@@ -66,7 +66,7 @@ const WebRTCConn = ({friend,ws}) => {
         // }
 
         peerConnection.current.addEventListener('icecandidate',event=>{
-
+            
             //if new candidates received transmit to the other guy
             if(event.candidate){
                 const answerMessage={
@@ -154,8 +154,8 @@ const WebRTCConn = ({friend,ws}) => {
             if(data.type==="newIceCandidate"){
                 try{
                     await peerConnection.current.addIceCandidate(data.content)
-                    // console.log("ice candidate")
-                    // console.log(peerConnection.current.connectionState)
+                    console.log("ice candidate")
+                    console.log(peerConnection.current.connectionState)
                 }
                 catch(e){
                     console.error("failed to add ice candidate")
