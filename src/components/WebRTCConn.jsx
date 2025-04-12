@@ -36,7 +36,12 @@ const WebRTCConn = ({friend,ws}) => {
             const status=await window.confirm(`receiving call from ${data.sender} , do you want to answer`)
             if (status){
 
-         
+            //if peerConnection already Exists then need to tear it down and set anew
+
+                setUpNewPeerConnection()
+                initiatePeerConnection()
+
+            
             peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.content))
             
             const local=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
@@ -65,19 +70,19 @@ const WebRTCConn = ({friend,ws}) => {
         }
         else{
             //send close message to the person
-            const answerMessage={
-                "type":"close",
-                "content":"close",
-                "sender":username,
-                "receiver":friend
-            }
-            console.log("close message")
-            ws.send(JSON.stringify(answerMessage))
+            // const answerMessage={
+            //     "type":"close",
+            //     "content":"close",
+            //     "sender":username,
+            //     "receiver":friend
+            // }
+            // console.log("close message")
+            // ws.send(JSON.stringify(answerMessage))
         }
         }
         
         if(data.type==="close"){
-            //do whatever you were doing in 
+            //check if the sender is same as
             if(peerConnection.current){
                 peerConnection.current.close()
                 peerConnection.current=null
@@ -107,6 +112,37 @@ const WebRTCConn = ({friend,ws}) => {
             }
         }
         
+    }
+    const setUpNewPeerConnection=()=>{
+        const iceConfiguration = {
+            iceServers: [
+                {
+                    urls: 'turn:myturn.347658.xyz:3478',
+                    username: 'admin',
+                    credential: 'adsf@34faa86ADF905_'
+                }
+            ]
+        }
+        if(peerConnection.current){
+            //if already exists check if friend is set or not and if yes then inform the other that connection is closed
+            if(peerConnection.current.connectionState=='connected'){
+                const answerMessage={
+                    "type":"close",
+                    "content":"close",
+                    "sender":username,
+                    "receiver":friend
+                }
+                ws.send(JSON.stringify(answerMessage))
+            }
+            peerConnection.current.close()
+            if(dataChannel.current){
+                //initiate closing 
+                dataChannel.current.close()
+                dataChannel.current=null
+            }
+        }
+
+    peerConnection.current=new RTCPeerConnection(iceConfiguration)
     }
 
     const initiatePeerConnection=()=>{
@@ -211,16 +247,7 @@ const WebRTCConn = ({friend,ws}) => {
 
             //if this is the initiator then the makeoffer would set this up so no need to do this
         if(!peerConnection.current){
-            const iceConfiguration = {
-                iceServers: [
-                    {
-                        urls: 'turn:myturn.347658.xyz:3478',
-                        username: 'admin',
-                        credential: 'adsf@34faa86ADF905_'
-                    }
-                ]
-            }
-        peerConnection.current=new RTCPeerConnection(iceConfiguration)
+                setUpNewPeerConnection()
         }
         
         initiatePeerConnection()
@@ -263,25 +290,7 @@ return ()=>{ws.removeEventListener("message",handleWebRTCMessages)}
     const makeOffer=async()=>{
 
         //open a peerconnection , if already then don't care just close it
-        const iceConfiguration = {
-            iceServers: [
-                {
-                    urls: 'turn:myturn.347658.xyz:3478',
-                    username: 'admin',
-                    credential: 'adsf@34faa86ADF905_'
-                }
-            ]
-        }
-        if(peerConnection.current){
-            peerConnection.current.close()
-            if(dataChannel.current){
-                //initiate closing 
-                dataChannel.current.close()
-                dataChannel.current=null
-            }
-        }
-
-    peerConnection.current=new RTCPeerConnection(iceConfiguration)
+        setUpNewPeerConnection()
         initiatePeerConnection()
 
         //setup all the connections for peerConnection
