@@ -68,7 +68,9 @@ const WebSocketConn = () => {
                 console.log("friend received and set")
                 setSelectedFriend(data.content)
             }
+
         }
+        
 
         conn.onclose=async ()=>{
             console.log("closed")
