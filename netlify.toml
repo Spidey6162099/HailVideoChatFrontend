@@ -1,9 +1,4 @@
 [[redirects]]
-  from = "/api/*"
-  to = "https://server.347658.xyz/:splat"
-  force=true
-
-[[redirects]]
-  from ="/*"
-  to="/"
+  from ="/*"  
+  to="/index.html"
 
