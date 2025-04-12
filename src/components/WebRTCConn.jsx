@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { data, useParams, useSearchParams } from 'react-router-dom'
 import Chatbox from './Chatbox'
 import Video from './Video'
 import VideoBox from './VideoBox'
@@ -254,12 +254,9 @@ const WebRTCConn = ({friend,ws}) => {
 
         //this only happens for receiver so in this
         peerConnection.current.addEventListener('datachannel',event=>{
-            //if datachannel received means connection opened with new so any old just rmove
-                if(dataChannel.current){
-                        dataChannel.current.close()
-                        dataChannel.current=null
-                }
+            //if datachannel received means connection opened with new so any old just remove or maybe the effect just ran again
                 
+                if(!dataChannel.current){
 
                 const dataChannel1=event.channel;
                 dataChannel.current=dataChannel1
@@ -273,7 +270,7 @@ const WebRTCConn = ({friend,ws}) => {
                     dataChannel.current=null
                     setIsReady(false)
                 }
-            
+                }
 
         })
 
