@@ -40,6 +40,26 @@ const WebRTCConn = ({friend,ws}) => {
 
                 setUpNewPeerConnection()
                 initiatePeerConnection()
+                peerConnection.current.addEventListener('datachannel',event=>{
+                    //if datachannel received means connection opened with new so any old just remove or maybe the effect just ran again
+                        
+                        if(!dataChannel.current){
+        
+                        const dataChannel1=event.channel;
+                        dataChannel.current=dataChannel1
+                        
+                        dataChannel1.onopen=()=>{
+                            console.log("data channel open to" +username)
+                            setIsReady(true)
+                        }
+                        dataChannel.current.onclose=()=>{
+                            console.log("data channel closed"+ username)
+                            dataChannel.current=null
+                            setIsReady(false)
+                        }
+                        }
+        
+                })
 
             
             peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.content))
@@ -253,26 +273,7 @@ const WebRTCConn = ({friend,ws}) => {
         initiatePeerConnection()
 
         //this only happens for receiver so in this
-        peerConnection.current.addEventListener('datachannel',event=>{
-            //if datachannel received means connection opened with new so any old just remove or maybe the effect just ran again
-                
-                if(!dataChannel.current){
 
-                const dataChannel1=event.channel;
-                dataChannel.current=dataChannel1
-                
-                dataChannel1.onopen=()=>{
-                    console.log("data channel open to" +username)
-                    setIsReady(true)
-                }
-                dataChannel.current.onclose=()=>{
-                    console.log("data channel closed"+ username)
-                    dataChannel.current=null
-                    setIsReady(false)
-                }
-                }
-
-        })
 
 
         
