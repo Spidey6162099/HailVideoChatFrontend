@@ -16,16 +16,16 @@ const WebSocketConn = () => {
     const setFriend=(friend)=>{
         // console.log("state changed")
 
-        //set friend
-        if(ws.current){
-            console.log("friend sent")
-            ws.current.send(JSON.stringify({
-                "type":"friend",
-                "content":username,
-                "sender":username,
-                "receiver":friend
-            }))
-        }
+        // //set friend
+        // if(ws.current){
+        //     console.log("friend sent")
+        //     ws.current.send(JSON.stringify({
+        //         "type":"friend",
+        //         "content":username,
+        //         "sender":username,
+        //         "receiver":friend
+        //     }))
+        // }
         
         setSelectedFriend(friend)
     }
@@ -64,10 +64,10 @@ const WebSocketConn = () => {
             else if(data.type==="allusers"){
                 setOnlineUsers(data.list.filter(x=>x!=username))
             }
-            else if(data.type==="friend"){
-                console.log("friend received and set")
-                setSelectedFriend(data.content)
-            }
+            // else if(data.type==="friend"){
+            //     console.log("friend received and set")
+            //     setSelectedFriend(data.content)
+            // }
 
         }
         

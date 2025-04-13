@@ -6,13 +6,17 @@ import VideoBox from './VideoBox'
 import { toast } from 'react-toastify'
 
 
+
 const WebRTCConn = ({friend,ws}) => {
 
     const {username}=useParams()
 
     //isready keeps track of datachannel for use
     const [isReady,setIsReady]=useState(false)
-
+    const localFriend=useRef(null)
+    if(friend){
+        localFriend.current=friend
+    }
 
     // console.log(username)
     const peerConnection=useRef(null)
@@ -35,12 +39,28 @@ const WebRTCConn = ({friend,ws}) => {
             //first check if they are interested or not
             const status=await window.confirm(`receiving call from ${data.sender} , do you want to answer`)
             if (status){
+                if(localFriend.current&&localFriend.current!=data.sender&&peerConnection.current&&peerConnection.current.connectionState==='connected'){
 
+                        // send close message to the person who was on the call
+                        const answerMessage={
+                            "type":"close",
+                            "content":"close",
+                            "sender":username,
+                            "receiver":localFriend.current
+                        }
+                        console.log("close message")
+                        ws.send(JSON.stringify(answerMessage))
+                        peerConnection.current.close()
+
+                }
+            localFriend.current=data.sender;
             //if peerConnection already Exists then need to tear it down and set anew
 
-                setUpNewPeerConnection()
-                initiatePeerConnection()
-                peerConnection.current.addEventListener('datachannel',event=>{
+            setUpNewPeerConnection()
+            initiatePeerConnection()
+                //set friend 
+                
+            peerConnection.current.addEventListener('datachannel',event=>{
                     //if datachannel received means connection opened with new so any old just remove or maybe the effect just ran again
                         
                         if(!dataChannel.current){
@@ -69,35 +89,34 @@ const WebRTCConn = ({friend,ws}) => {
 
             local.getTracks().forEach(track=>{
                 peerConnection.current.addTrack(track,local)
-                console.log("sent  stream from "+username +" to "+friend)
+                console.log("sent  stream from "+username +" to "+data.sender)
             })
-            try{
+
             const answer=await peerConnection.current.createAnswer()
             await peerConnection.current.setLocalDescription(answer)
             const answerMessage={
                 "type":"answer",
                 "content":answer,
                 "sender":username,
-                "receiver":friend
+                "receiver":data.sender
             }
             ws.send(JSON.stringify(answerMessage))
-            console.log("offer received, answer sent: " +answer)
+            console.log("offer received, answer sent: " +answer+answerMessage.receiver)
             console.log(peerConnection.current.connectionState)
-        }
-        catch(e){
 
         }
-        }
         else{
-            //send close message to the person
-            // const answerMessage={
-            //     "type":"close",
-            //     "content":"close",
-            //     "sender":username,
-            //     "receiver":friend
-            // }
-            // console.log("close message")
-            // ws.send(JSON.stringify(answerMessage))
+            if(localFriend.current&&peerConnection&&peerConnection.current.connectionState==="connected"){
+            // send close message to the person who requested the call
+            const answerMessage={
+                "type":"close",
+                "content":"close",
+                "sender":username,
+                "receiver":data.sender
+            }
+            console.log("close message")
+            ws.send(JSON.stringify(answerMessage))
+        }
         }
         }
         
@@ -109,7 +128,7 @@ const WebRTCConn = ({friend,ws}) => {
                 setLocalStream(null)
                 setRemoteStream(null)
                 setShouldRefresh(prev=>!prev)
-                toast.error(`${friend} has disconnected`)
+                toast.error(`${data.sender} has disconnected`)
     
                 //send message to other to closeup
             }
@@ -137,7 +156,7 @@ const WebRTCConn = ({friend,ws}) => {
         const iceConfiguration = {
             iceServers: [
                 {
-                    urls: 'turns:myturn.347658.xyz:5349',
+                    urls: 'turns:myturn.347658.xyz:3478',
                     username: 'admin',
                     credential: 'adsf@34faa86ADF905_'
                 }
@@ -150,7 +169,7 @@ const WebRTCConn = ({friend,ws}) => {
                     "type":"close",
                     "content":"close",
                     "sender":username,
-                    "receiver":friend
+                    "receiver":localFriend.current
                 }
                 ws.send(JSON.stringify(answerMessage))
             }
@@ -174,24 +193,14 @@ const WebRTCConn = ({friend,ws}) => {
                     "type":"newIceCandidate",
                     "content":event.candidate,
                     "sender":username,
-                    "receiver":friend
+                    "receiver":localFriend.current
                 }
                 ws.send(JSON.stringify(answerMessage))
             }
         })
 
         peerConnection.current.addEventListener('connectionstatechange',event=>{
-            // if(peerConnection.current.connectionState==='disconnected'){
-               
-            //     //tear down everything
-            //     toast.error(`${friend} disconnected`)
-            //     dataChannel.current=null
-            //     peerConnection.current=null
-            //     setLocalStream(null)
-            //     setRemoteStream(null)
-            //     setShouldRefresh((prev)=>!prev)
-            //     //make the useEffect rerun , we can use loc
-            // }
+
             
 
             // if(peerConnection.current.connectionState==='connected'){
@@ -201,14 +210,6 @@ const WebRTCConn = ({friend,ws}) => {
 
         
 
-        // peerConnection.current.addEventListener('track',async (event)=>{
-        //     const [remoteStream]=event.streams
-            
-        // })
-    
-
-        //WebSocket Signalling Server Usecases
-
 
        
 
@@ -216,26 +217,8 @@ const WebRTCConn = ({friend,ws}) => {
         const handleIncomingTrack=async (event)=>{
             setRemoteStream(event.streams[0])
     
-            console.log("received remote stream "+username +" from "+friend)
+            console.log("received remote stream "+username +" from "+localFriend.current)
     
-            //redundant no need
-        //     if(!localStream){
-        //         const local=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
-        //         setLocalStream(local)
-
-        //         local.getTracks().forEach(track=>{
-        //             peerConnection.current.addTrack(track,local)
-        //             console.log("sent remote stream from "+username +" to "+friend)
-        //         })
-        //     }
-        //     else{
-        //     localStream.getTracks().forEach(track=>{
-        //         peerConnection.current.addTrack(track,localStream)
-        //         console.log("sent stream from "+username +" to "+friend)
-        //     })
-        // }
-
-            // finally you must also send back to the source so it can set it's own remote
 
         }
     
@@ -253,7 +236,7 @@ const WebRTCConn = ({friend,ws}) => {
         
 
         //since reciever won't have friend set not working 
-        if(!friend||!ws){
+        if(!ws){
             return;
         }
 
@@ -266,11 +249,11 @@ const WebRTCConn = ({friend,ws}) => {
 
 
             //if this is the initiator then the makeoffer would set this up so no need to do this
-        if(!peerConnection.current){
-                setUpNewPeerConnection()
-        }
+        // if(!peerConnection.current){
+        //         setUpNewPeerConnection()
+        // }
         
-        initiatePeerConnection()
+        // initiatePeerConnection()
 
         //this only happens for receiver so in this
 
@@ -280,7 +263,7 @@ const WebRTCConn = ({friend,ws}) => {
 //if websocket connection,friend or peerconnection changes then rerun to
 return ()=>{ws.removeEventListener("message",handleWebRTCMessages)}
 
-    },[ws,friend,shouldRefresh])
+    },[ws,shouldRefresh])
 
 
     //if initiator open the channel
@@ -314,7 +297,7 @@ return ()=>{ws.removeEventListener("message",handleWebRTCMessages)}
     
             local.getTracks().forEach(track=>{
                 peerConnection.current.addTrack(track,local)
-                console.log("sent remote stream from "+username +" to "+friend)
+                console.log("sent remote stream from "+username +" to "+localFriend.current)
             })
          
 
@@ -324,7 +307,7 @@ return ()=>{ws.removeEventListener("message",handleWebRTCMessages)}
             "type":"offer",
             "content":offer,
             "sender":username,
-            "receiver":friend
+            "receiver":localFriend.current
         }
         console.log("offer sent: "+offer)
 
@@ -353,7 +336,7 @@ return ()=>{ws.removeEventListener("message",handleWebRTCMessages)}
                 "type":"close",
                 "content":"close",
                 "sender":username,
-                "receiver":friend
+                "receiver":localFriend.current
             }
             ws.send(JSON.stringify(answerMessage))
         }
@@ -364,13 +347,13 @@ return ()=>{ws.removeEventListener("message",handleWebRTCMessages)}
     
   return (
     <div className='flex flex-col justify-center items-center overflow-auto'>
-    <div>WebRTC {friend}</div>
+    <div>WebRTC {localFriend.current}</div>
     <div className='flex flex-row justify-center items-center mt-5 gap-5'>
     <Video src={localStream} username={"you"} closeCall></Video>
-    <Video src={remoteStream} username={friend}></Video>
+    <Video src={remoteStream} username={localFriend.current}></Video>
     
     </div>
-    <Chatbox datachannel={dataChannel.current} friend={friend} ></Chatbox>
+    <Chatbox datachannel={dataChannel.current} friend={localFriend.current} ></Chatbox>
     <button onClick={makeOffer} className='bg-green-200 hover:bg-green-100'>make Call</button>
     <button onClick={closeCall} className='bg-red-200 hover:bg-red-100'>close call</button>
     </div>
