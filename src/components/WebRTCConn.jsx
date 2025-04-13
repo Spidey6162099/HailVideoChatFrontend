@@ -156,7 +156,7 @@ const WebRTCConn = ({friend,ws}) => {
         const iceConfiguration = {
             iceServers: [
                 {
-                    urls: 'turns:myturn.347658.xyz:3478',
+                    urls: 'turns:myturn.347658.xyz:5349',
                     username: 'admin',
                     credential: 'adsf@34faa86ADF905_'
                 }
